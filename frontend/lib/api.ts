@@ -1,14 +1,23 @@
-import axios from "axios";
-import Cookies from "js-cookie";
+// src/lib/api.ts
+export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000/api";
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api", 
-});
+export async function apiFetch<T>(
+  path: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(options.headers || {}),
+  };
 
-API.interceptors.request.use((config) => {
-  const token = Cookies.get("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  const json = await res.json().catch(() => undefined);
 
-export default API;
+  if (!res.ok) {
+    const msg = json?.msg || json?.error || res.statusText;
+    throw new Error(msg || "Request failed");
+  }
+  return json as T;
+}

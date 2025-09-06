@@ -1,8 +1,16 @@
-// utils/zeptoMail.ts
-import axios from "axios";
+import nodemailer from "nodemailer";
+import SMTPTransport from "nodemailer/lib/smtp-transport";
 
-const ZEPTO_API_URL = "https://mail.zoho.com/api/accounts/YOUR_ACCOUNT_ID/messages";
-const API_KEY = process.env.ZEPTO_API_KEY; // store in .env
+const transporter = nodemailer.createTransport({
+  host: process.env.ZEPTO_SMTP_HOST,
+  port: Number(process.env.ZEPTO_SMTP_PORT) || 587,
+  secure: false, // false for TLS (587)
+  auth: {
+    user: process.env.ZEPTO_SMTP_USER,
+    pass: process.env.ZEPTO_SMTP_PASS,
+  },
+  family: 4, // force IPv4
+} as SMTPTransport.Options); // <-- cast to SMTPTransport.Options
 
 interface EmailData {
   to: string;
@@ -11,37 +19,32 @@ interface EmailData {
   attachments?: { filename: string; content: Buffer }[];
 }
 
-// Generic send email function
-export const sendEmail = async (data: EmailData) => {
+export const sendEmailSMTP = async (data: EmailData) => {
   try {
-    const payload: any = {
-      fromAddress: "your_email@yourdomain.com",
-      toAddress: data.to,
+    const mailOptions = {
+      from: process.env.ZEPTO_FROM_EMAIL,
+      to: data.to,
       subject: data.subject,
-      content: data.body,
+      html: data.body,
+      attachments: data.attachments?.map(att => ({
+        filename: att.filename,
+        content: att.content,
+      })),
     };
 
-    if (data.attachments) {
-      payload.attachments = data.attachments.map(att => ({
-        name: att.filename,
-        content: att.content.toString("base64"),
-      }));
-    }
+    const info = await transporter.sendMail(mailOptions);
 
-    const response = await axios.post(ZEPTO_API_URL, payload, {
-      headers: {
-        Authorization: `Zoho-oauthtoken ${API_KEY}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    return response.data;
+    return {
+      accepted: info.accepted,
+      rejected: info.rejected,
+      response: info.response,
+    };
   } catch (err: any) {
-    throw new Error(err.response?.data?.message || err.message);
+    console.error("SMTP send error:", err.message);
+    throw new Error(err.message);
   }
 };
 
-// Exported functions for clarity
-export const sendInvoiceMail = sendEmail;
-export const sendAlertMail = sendEmail;
-export const sendTicketMail = sendEmail;
+export const sendInvoiceMail = sendEmailSMTP;
+export const sendAlertMail = sendEmailSMTP;
+export const sendTicketMail = sendEmailSMTP;

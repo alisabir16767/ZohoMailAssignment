@@ -7,12 +7,38 @@ import EmailLog from "../models/EmailLog";
 import { sendInvoiceMail, sendAlertMail, sendTicketMail } from "../utils/zeptoMail";
 import { generateTicketPDF } from "../utils/pdfGenerator";
 
+
+export const createInvoice = async (req: Request, res: Response) => {
+  try {
+    const { userId, amount, items } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    const invoice = await Invoice.create({
+      user: userId,
+      amount,
+      items,
+    });
+
+    res.status(201).json({
+      msg: "Invoice created successfully",
+      invoice,
+    });
+  } catch (error: any) {
+    res.status(500).json({ msg: error.message });
+  }
+};
 export const sendInvoiceEmail = async (req: Request, res: Response) => {
   try {
     const { userId, invoiceId } = req.body;
+    console.log(req.body);
 
     const user = await User.findById(userId);
+    console.log("User:", user);
+
     const invoice = await Invoice.findById(invoiceId);
+    console.log(invoice);
     if (!user || !invoice) return res.status(404).json({ msg: "User or Invoice not found" });
 
     const emailData = {
@@ -24,8 +50,16 @@ export const sendInvoiceEmail = async (req: Request, res: Response) => {
     };
 
     const response = await sendInvoiceMail(emailData);
+    console.log(response);
 
-    await EmailLog.create({ userId, type: "invoice", status: response.status, sentAt: new Date() });
+    await EmailLog.create({
+      userId,
+      type: "invoice",
+      status: response.accepted.length > 0 ? "sent" : "failed",
+      smtpResponse: response.response,
+      sentAt: new Date(),
+    });
+    
 
     res.status(200).json({ msg: "Invoice email sent successfully", response });
   } catch (error: any) {
@@ -49,7 +83,14 @@ export const sendAlertEmail = async (req: Request, res: Response) => {
 
     const response = await sendAlertMail(emailData);
 
-    await EmailLog.create({ userId, type: "alert", status: response.status, sentAt: new Date() });
+    await EmailLog.create({
+      userId,
+      type: "invoice",
+      status: response.accepted.length > 0 ? "sent" : "failed",
+      smtpResponse: response.response,
+      sentAt: new Date(),
+    });
+    
 
     res.status(200).json({ msg: "Alert email sent successfully", response });
   } catch (error: any) {
@@ -81,7 +122,14 @@ export const sendTicketEmail = async (req: Request, res: Response) => {
 
     const response = await sendTicketMail(emailData);
 
-    await EmailLog.create({ userId, type: "ticket", status: response.status, sentAt: new Date() });
+    await EmailLog.create({
+      userId,
+      type: "invoice",
+      status: response.accepted.length > 0 ? "sent" : "failed",
+      smtpResponse: response.response,
+      sentAt: new Date(),
+    });
+    
 
     res.status(200).json({ msg: "Ticket email sent successfully", response });
   } catch (error: any) {

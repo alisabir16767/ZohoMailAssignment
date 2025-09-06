@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface IInvoice extends Document {
   user: mongoose.Types.ObjectId;
   amount: number;
-  items: string[];         // added
+  items: string[];        
   createdAt?: Date;
   updatedAt?: Date;
 }
