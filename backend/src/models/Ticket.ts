@@ -5,6 +5,10 @@ export interface ITicket extends Document {
   subject: string;
   message: string;
   status: "open" | "in-progress" | "closed";
+  eventName: string;       // added
+  eventDate: Date;         // added
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const ticketSchema = new Schema<ITicket>(
@@ -17,6 +21,8 @@ const ticketSchema = new Schema<ITicket>(
       enum: ["open", "in-progress", "closed"],
       default: "open",
     },
+    eventName: { type: String, required: true },   // added
+    eventDate: { type: Date, required: true },    // added
   },
   { timestamps: true }
 );

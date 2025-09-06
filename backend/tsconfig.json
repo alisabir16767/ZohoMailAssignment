@@ -29,7 +29,10 @@
 
     /* Performance */
     "skipLibCheck": true,
-    "incremental": true
+    "incremental": true,
+
+    /* Suppress deprecated warnings for node10 resolution */
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

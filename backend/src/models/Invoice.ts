@@ -3,20 +3,16 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface IInvoice extends Document {
   user: mongoose.Types.ObjectId;
   amount: number;
-  description: string;
-  status: "pending" | "paid" | "cancelled";
+  items: string[];         // added
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const invoiceSchema = new Schema<IInvoice>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     amount: { type: Number, required: true },
-    description: { type: String, required: true },
-    status: {
-      type: String,
-      enum: ["pending", "paid", "cancelled"],
-      default: "pending",
-    },
+    items: [{ type: String, required: true }],  // added
   },
   { timestamps: true }
 );
