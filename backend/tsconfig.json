@@ -1,38 +1,24 @@
 {
   "compilerOptions": {
-    /* File Layout */
     "rootDir": "./src",
     "outDir": "./dist",
-
-    /* Module + Environment */
     "module": "CommonJS",
     "target": "ES2020",
     "lib": ["ES2020"],
     "types": ["node"],
-
-    /* Output Options */
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-
-    /* Strictness */
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-
-    /* Interop */
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-
-    /* Performance */
     "skipLibCheck": true,
-    "incremental": true,
-
-    /* Suppress deprecated warnings for node10 resolution */
-    "ignoreDeprecations": "6.0"
+    "incremental": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
