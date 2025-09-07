@@ -1,14 +1,18 @@
 import axios from "axios";
 
+const BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000/api"
+    : "https://zohomailassignment.onrender.com/api";
+
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // your backend
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
-// Attach token if available
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  if (token) {
+  if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
