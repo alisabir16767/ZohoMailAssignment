@@ -1,9 +1,10 @@
 import axios from "axios";
 
-const BASE_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000/api"
-    : "https://zohomailassignment.onrender.com/api";
+let BASE_URL = "https://zohomailassignment.onrender.com/api";
+
+if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+  BASE_URL = "http://localhost:5000/api";
+}
 
 const API = axios.create({
   baseURL: BASE_URL,
@@ -11,9 +12,11 @@ const API = axios.create({
 });
 
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
   return config;
 });
