@@ -32,14 +32,13 @@ export const createInvoice = async (req: Request, res: Response) => {
 export const sendInvoiceEmail = async (req: Request, res: Response) => {
   try {
     const { userId, invoiceId } = req.body;
-    console.log(req.body);
 
     const user = await User.findById(userId);
-    console.log("User:", user);
-
     const invoice = await Invoice.findById(invoiceId);
-    console.log(invoice);
-    if (!user || !invoice) return res.status(404).json({ msg: "User or Invoice not found" });
+
+    if (!user || !invoice) {
+      return res.status(404).json({ msg: "User or Invoice not found" });
+    }
 
     const emailData = {
       to: user.email,
@@ -50,16 +49,14 @@ export const sendInvoiceEmail = async (req: Request, res: Response) => {
     };
 
     const response = await sendInvoiceMail(emailData);
-    console.log(response);
 
     await EmailLog.create({
-      userId,
-      type: "invoice",
+      to: emailData.to,
+      subject: emailData.subject,
+      body: emailData.body,
       status: response.accepted.length > 0 ? "sent" : "failed",
-      smtpResponse: response.response,
-      sentAt: new Date(),
+      error: response.response || null,
     });
-    
 
     res.status(200).json({ msg: "Invoice email sent successfully", response });
   } catch (error: any) {
@@ -85,14 +82,43 @@ export const sendAlertEmail = async (req: Request, res: Response) => {
 
     await EmailLog.create({
       userId,
-      type: "invoice",
+      to: emailData.to,
+      subject: emailData.subject,
+      body: emailData.body,
+      type: "alert",
       status: response.accepted.length > 0 ? "sent" : "failed",
       smtpResponse: response.response,
       sentAt: new Date(),
     });
-    
 
     res.status(200).json({ msg: "Alert email sent successfully", response });
+  } catch (error: any) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
+
+export const createTicket = async (req: Request, res: Response) => {
+  try {
+    const { userId, subject, message, eventName, eventDate } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    const ticket = await Ticket.create({
+      user: userId,
+      subject,
+      message,
+      eventName,
+      eventDate,
+    });
+
+    res.status(201).json({
+      msg: "Ticket created successfully",
+      ticket,
+    });
   } catch (error: any) {
     res.status(500).json({ msg: error.message });
   }
@@ -106,7 +132,6 @@ export const sendTicketEmail = async (req: Request, res: Response) => {
     const ticket = await Ticket.findById(ticketId);
     if (!user || !ticket) return res.status(404).json({ msg: "User or Ticket not found" });
 
-    // Generate PDF ticket
     const pdfBuffer = await generateTicketPDF(ticket);
 
     const emailData = {
@@ -121,18 +146,17 @@ export const sendTicketEmail = async (req: Request, res: Response) => {
     };
 
     const response = await sendTicketMail(emailData);
-
     await EmailLog.create({
-      userId,
-      type: "invoice",
+      to: emailData.to,
+      subject: emailData.subject,
+      body: emailData.body,
       status: response.accepted.length > 0 ? "sent" : "failed",
-      smtpResponse: response.response,
-      sentAt: new Date(),
+      error: response.response || null,
     });
-    
 
     res.status(200).json({ msg: "Ticket email sent successfully", response });
   } catch (error: any) {
     res.status(500).json({ msg: error.message });
   }
 };
+
