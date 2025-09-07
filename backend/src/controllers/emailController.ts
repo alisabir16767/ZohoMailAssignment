@@ -67,28 +67,18 @@ export const sendInvoiceEmail = async (req: Request, res: Response) => {
 
 export const sendAlertEmail = async (req: Request, res: Response) => {
   try {
-    const { userId, alertType, message } = req.body;
+    const { to, subject, body } = req.body;
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ msg: "User not found" });
-
-    const emailData = {
-      to: user.email,
-      subject: `Alert: ${alertType}`,
-      body: `<p>${message}</p>`,
-    };
+    const emailData = { to, subject, body };
 
     const response = await sendAlertMail(emailData);
 
     await EmailLog.create({
-      userId,
-      to: emailData.to,
-      subject: emailData.subject,
-      body: emailData.body,
-      type: "alert",
+      to,
+      subject,
+      body,
       status: response.accepted.length > 0 ? "sent" : "failed",
-      smtpResponse: response.response,
-      sentAt: new Date(),
+      error: response.response || null,
     });
 
     res.status(200).json({ msg: "Alert email sent successfully", response });
@@ -96,6 +86,7 @@ export const sendAlertEmail = async (req: Request, res: Response) => {
     res.status(500).json({ msg: error.message });
   }
 };
+
 
 
 export const createTicket = async (req: Request, res: Response) => {

@@ -1,23 +1,17 @@
-// src/lib/api.ts
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000/api";
+import axios from "axios";
 
-export async function apiFetch<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...(options.headers || {}),
-  };
+const API = axios.create({
+  baseURL: "http://localhost:5000/api", // your backend
+  withCredentials: true,
+});
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-  const json = await res.json().catch(() => undefined);
-
-  if (!res.ok) {
-    const msg = json?.msg || json?.error || res.statusText;
-    throw new Error(msg || "Request failed");
+// Attach token if available
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return json as T;
-}
+  return config;
+});
+
+export default API;
