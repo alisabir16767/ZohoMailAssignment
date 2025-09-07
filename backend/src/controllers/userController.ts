@@ -6,79 +6,34 @@ import bcrypt from "bcryptjs";
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-      return res
-        .status(400)
-        .json({ msg: "name, email and password are required" });
-    }
-
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ msg: "User already exists" });
+      return res.status(400).json({ error: "User already exists" });
     }
-
     const user = new User({ name, email, password });
     await user.save();
-
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "1h" }
-    );
-
-    return res.status(201).json({
-      msg: "User registered successfully",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
+      expiresIn: "1h",
     });
+    return res.status(201).json({token});
   } catch (error: any) {
-    return res
-      .status(500)
-      .json({ msg: "Internal server error", error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ msg: "email and password are required" });
-    }
-
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ msg: "User not found" });
-    }
+    if (!user) return res.status(400).json({ error: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ msg: "Invalid password" });
-    }
-
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "7h" }
-    );
-
-    return res.status(200).json({
-      msg: "User Logged in successfully",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+    if (!isMatch) return res.status(400).json({ error: "Invalid password" });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
+      expiresIn: "7h",
     });
+    return res.status(200).json({token});
   } catch (error: any) {
-    return res
-      .status(500)
-      .json({ msg: "Internal error", error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };

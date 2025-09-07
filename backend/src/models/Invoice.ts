@@ -1,20 +1,12 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-export interface IInvoice extends Document {
-  user: mongoose.Types.ObjectId;
-  amount: number;
-  items: string[];        
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-const invoiceSchema = new Schema<IInvoice>(
+const invoiceSchema = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     amount: { type: Number, required: true },
-    items: [{ type: String, required: true }],  // added
+    items: [{ type: String, required: true }],
   },
   { timestamps: true }
 );
 
-export default mongoose.model<IInvoice>("Invoice", invoiceSchema);
+export default mongoose.model("Invoice", invoiceSchema);

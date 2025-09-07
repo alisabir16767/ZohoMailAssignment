@@ -5,18 +5,11 @@ const transporter = nodemailer.createTransport({
   port: 587,
   auth: {
     user: process.env.SMTP_USER,
-    pass: process.env.ZEPTO_API_KEY,
+    pass: process.env.SMTP_PASS, 
   },
 });
 
-interface MailOptions {
-  to: string;
-  subject: string;
-  html: string;
-  attachments?: { filename: string; path: string }[];
-}
-
-export const sendEmail = async ({ to, subject, html, attachments }: MailOptions) => {
+export const sendEmail = async ({ to, subject, html, attachments }: any) => {
   await transporter.sendMail({
     from: process.env.FROM_EMAIL,
     to,

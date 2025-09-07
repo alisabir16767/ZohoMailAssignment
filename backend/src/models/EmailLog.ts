@@ -1,14 +1,6 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-export interface IEmailLog extends Document {
-  to: string;
-  subject: string;
-  body: string;
-  status: "sent" | "failed";
-  error?: string;
-}
-
-const emailLogSchema = new Schema<IEmailLog>(
+const emailLogSchema = new Schema(
   {
     to: { type: String, required: true },
     subject: { type: String, required: true },
@@ -23,4 +15,4 @@ const emailLogSchema = new Schema<IEmailLog>(
   { timestamps: true }
 );
 
-export default mongoose.model<IEmailLog>("EmailLog", emailLogSchema);
+export default mongoose.model("EmailLog", emailLogSchema);
