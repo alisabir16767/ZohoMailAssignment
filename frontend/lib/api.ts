@@ -4,7 +4,6 @@ const API = axios.create({
   baseURL: "https://zohomailassignment.onrender.com/api", 
   withCredentials: true,
 });
-
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {

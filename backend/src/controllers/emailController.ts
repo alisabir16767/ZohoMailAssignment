@@ -11,22 +11,18 @@ import {
   sendInvoiceEmailSchema,
   sendAlertEmailSchema,
   createTicketSchema,
-  sendTicketEmailSchema,
-} from "../validators/emailValidators";
+} from "../validators/emailValidators"; // removed unused sendTicketEmailSchema
 
-
+// ---------------- INVOICE ----------------
 export const createInvoice = wrapAsync(async (req: Request, res: Response) => {
   const { userId, amount, items } = createInvoiceSchema.parse(req.body);
-console.log(req.body);
+
   const user = await User.findById(userId);
   if (!user) return res.status(404).json({ msg: "User not found" });
 
   const invoice = await Invoice.create({ user: userId, amount, items });
-  console.log(invoice);
   res.status(201).json({ msg: "Invoice created successfully", invoice });
 });
-
-
 
 export const sendInvoiceEmail = wrapAsync(async (req: Request, res: Response) => {
   const { userId, invoiceId } = sendInvoiceEmailSchema.parse(req.body);
@@ -56,8 +52,7 @@ export const sendInvoiceEmail = wrapAsync(async (req: Request, res: Response) =>
   res.status(200).json({ msg: "Invoice email sent successfully", response });
 });
 
-
-
+// ---------------- ALERT ----------------
 export const sendAlertEmail = wrapAsync(async (req: Request, res: Response) => {
   const { to, subject, body } = sendAlertEmailSchema.parse(req.body);
 
@@ -75,6 +70,7 @@ export const sendAlertEmail = wrapAsync(async (req: Request, res: Response) => {
   res.status(200).json({ msg: "Alert email sent successfully", response });
 });
 
+// ---------------- TICKET ----------------
 export const createTicket = wrapAsync(async (req: Request, res: Response) => {
   const { userId, subject, message, eventName, eventDate } = createTicketSchema.parse(req.body);
 
@@ -86,7 +82,8 @@ export const createTicket = wrapAsync(async (req: Request, res: Response) => {
 });
 
 export const sendTicketEmail = wrapAsync(async (req: Request, res: Response) => {
-  const { userId, ticketId } = sendTicketEmailSchema.parse(req.body);
+  // Accept any recipient email; fallback to user's email if not provided
+  const { userId, ticketId, to } = req.body;
 
   const user = await User.findById(userId);
   const ticket = await Ticket.findById(ticketId);
@@ -94,11 +91,11 @@ export const sendTicketEmail = wrapAsync(async (req: Request, res: Response) => 
 
   const pdfBuffer = await generateTicketPDF(ticket);
   const emailData = {
-    to: user.email,
+    to: to || user.email,
     subject: `Your Ticket #${ticket._id}`,
-    body: `<h1>Event Ticket</h1>
-           <p>Event: ${ticket.eventName}</p>
-           <p>Date: ${ticket.eventDate}</p>`,
+    body: `<h1>${ticket.eventName}</h1>
+           <p>${ticket.message}</p>
+           <p>Date: ${ticket.eventDate.toDateString()}</p>`,
     attachments: [{ filename: `Ticket-${ticket._id}.pdf`, content: pdfBuffer }],
   };
 
@@ -112,5 +109,5 @@ export const sendTicketEmail = wrapAsync(async (req: Request, res: Response) => 
     error: response.response || null,
   });
 
-  res.status(200).json({ msg: "Ticket email sent successfully", response });
+  res.status(200).json({ msg: `Ticket email sent successfully to ${emailData.to}`, response });
 });
