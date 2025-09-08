@@ -9,7 +9,9 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({
+
+
+app.use(cors({ //we can add here cutom frontend URL here alsoo
   origin: true,
   credentials: true,
 }));

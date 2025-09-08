@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs"; 
 import { wrapAsync } from "../utils/wrapAsync";
 
-// Register
 export const register = wrapAsync(async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
   console.log(req.body);
@@ -33,7 +32,6 @@ export const register = wrapAsync(async (req: Request, res: Response) => {
   });
 });
 
-// Login
 export const login = wrapAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 

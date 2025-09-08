@@ -11,9 +11,8 @@ import {
   sendInvoiceEmailSchema,
   sendAlertEmailSchema,
   createTicketSchema,
-} from "../validators/emailValidators"; // removed unused sendTicketEmailSchema
+} from "../validators/emailValidators"; 
 
-// ---------------- INVOICE ----------------
 export const createInvoice = wrapAsync(async (req: Request, res: Response) => {
   const { userId, amount, items } = createInvoiceSchema.parse(req.body);
 
@@ -52,7 +51,6 @@ export const sendInvoiceEmail = wrapAsync(async (req: Request, res: Response) =>
   res.status(200).json({ msg: "Invoice email sent successfully", response });
 });
 
-// ---------------- ALERT ----------------
 export const sendAlertEmail = wrapAsync(async (req: Request, res: Response) => {
   const { to, subject, body } = sendAlertEmailSchema.parse(req.body);
 
@@ -70,7 +68,6 @@ export const sendAlertEmail = wrapAsync(async (req: Request, res: Response) => {
   res.status(200).json({ msg: "Alert email sent successfully", response });
 });
 
-// ---------------- TICKET ----------------
 export const createTicket = wrapAsync(async (req: Request, res: Response) => {
   const { userId, subject, message, eventName, eventDate } = createTicketSchema.parse(req.body);
 
@@ -82,7 +79,6 @@ export const createTicket = wrapAsync(async (req: Request, res: Response) => {
 });
 
 export const sendTicketEmail = wrapAsync(async (req: Request, res: Response) => {
-  // Accept any recipient email; fallback to user's email if not provided
   const { userId, ticketId, to } = req.body;
 
   const user = await User.findById(userId);
