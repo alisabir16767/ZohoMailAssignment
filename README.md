@@ -1,6 +1,6 @@
 # Zoho ZeptoMail API Integration
 
-This project demonstrates the integration of **Zoho ZeptoMail** API to send emails for various purposes, including invoices, alerts, and PDF tickets. It is built using **Node.js/Express** for the backend and **Next.js + Shadcn UI** for the frontend.
+This project demonstrates the integration of **Zoho ZeptoMail** API to send emails for various purposes, including invoices, alerts, and PDF tickets. It is built using **Node.js/Express+MongoDB** for the backend and **Next.js + Shadcn UI** for the frontend.
 
 ---
 
@@ -33,5 +33,4 @@ This project demonstrates the integration of **Zoho ZeptoMail** API to send emai
 
 ---
 
-## Folder Structure (Example)
 
