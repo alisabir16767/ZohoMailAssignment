@@ -17,23 +17,19 @@ export default function Navbar() {
 
         {/* Links */}
         <div className="flex items-center gap-6">
-          <Link href="/tickets" className="text-gray-700 hover:text-blue-600">
-            Tickets
-          </Link>
-          <Link href="/about" className="text-gray-700 hover:text-blue-600">
-            About
-          </Link>
-          <Link href="/contact" className="text-gray-700 hover:text-blue-600">
-            Contact
-          </Link>
-
           {token ? (
             <>
-              <Link
-                href="/dashboard"
-                className="text-gray-700 hover:text-blue-600"
-              >
+              <Link href="/dashboard" className="text-gray-700 hover:text-blue-600">
                 Dashboard
+              </Link>
+              <Link href="/ticket" className="text-gray-700 hover:text-blue-600">
+                Tickets
+              </Link>
+              <Link href="/invoice" className="text-gray-700 hover:text-blue-600">
+                Invoice
+              </Link>
+              <Link href="/alert" className="text-gray-700 hover:text-blue-600">
+                Alert
               </Link>
               <Button
                 variant="outline"

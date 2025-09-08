@@ -5,6 +5,7 @@ import API from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext"; 
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function InvoicePage() {
   const { user } = useAuth(); 
@@ -25,7 +26,6 @@ export default function InvoicePage() {
         items: items.split(",").map((i) => i.trim()),
       });
 
-      // ✅ Save invoiceId from backend response
       setInvoiceId(res.data.invoice._id);
 
       alert("Invoice created!");
@@ -60,6 +60,7 @@ export default function InvoicePage() {
   };
 
   return (
+    <ProtectedRoute>
     <div className="max-w-md mx-auto mt-10 space-y-4">
       <h1 className="text-xl font-bold">Invoice</h1>
 
@@ -86,5 +87,6 @@ export default function InvoicePage() {
         Send Invoice Email
       </Button>
     </div>
+    </ProtectedRoute>
   );
 }

@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Mail, FileText, AlertTriangle, Ticket, User } from "lucide-react";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function LandingPage() {
   return (
+    <ProtectedRoute>
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 flex flex-col">
       <section className="flex-1 flex flex-col items-center justify-center text-center px-6">
         <motion.h1
@@ -15,7 +17,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          🚀 Email & Ticket Management System
+          Email & Ticket Management System
         </motion.h1>
         <motion.p
           className="text-lg text-gray-600 max-w-2xl mb-8"
@@ -24,7 +26,7 @@ export default function LandingPage() {
           transition={{ delay: 0.2 }}
         >
           Manage users, invoices, tickets, and alerts seamlessly with our
-          modern platform built using <span className="font-semibold">Next.js + shadcn</span>.
+          modern platform .
         </motion.p>
         <div className="flex gap-4">
           <Link href="/auth/register">
@@ -40,7 +42,7 @@ export default function LandingPage() {
 
       <section className="py-16 px-6 bg-gray-50">
         <h2 className="text-3xl font-bold text-center mb-12">
-          ✨ Features at a Glance
+          Features at a Glance
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           <Card className="shadow-lg">
@@ -98,5 +100,6 @@ export default function LandingPage() {
         </div>
       </section>
     </div>
+    </ProtectedRoute>
   );
 }

@@ -17,11 +17,12 @@ import {
 
 export const createInvoice = wrapAsync(async (req: Request, res: Response) => {
   const { userId, amount, items } = createInvoiceSchema.parse(req.body);
-
+console.log(req.body);
   const user = await User.findById(userId);
   if (!user) return res.status(404).json({ msg: "User not found" });
 
   const invoice = await Invoice.create({ user: userId, amount, items });
+  console.log(invoice);
   res.status(201).json({ msg: "Invoice created successfully", invoice });
 });
 
