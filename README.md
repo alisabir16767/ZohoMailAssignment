@@ -26,7 +26,7 @@ This project demonstrates the integration of **Zoho ZeptoMail** API to send emai
 
 ## Tech Stack
 
-- **Backend:** Node.js, Express.js, MongoDB
+- **Backend:** Node.js, Express.js, MongoDB,TypeScript
 - **Frontend:** Next.js, Shadcn UI
 - **Email Service:** Zoho ZeptoMail API
 - **Authentication:** JWT-based login (optional for protected routes)
